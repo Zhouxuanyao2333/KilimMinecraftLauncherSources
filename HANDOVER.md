@@ -1,28 +1,34 @@
-# Kilim Minecraft Launcher — 交接文档
+# Kilim Minecraft Launcher — 交接文档 / Handover Document
+
+**中文** | [English](#english)
 
 > 本文档描述项目架构与现状，**不包含源码**。源码请直接阅读仓库。
->
-> - 分支：`master`
-> - 技术栈：C# / .NET 10 + Avalonia 12，无 WebView，自绘液态玻璃 UI
-> - 账号模型：**仅 Microsoft（Xbox Live）账号**
+> This document describes the project architecture and current state and **contains no source code**. Please read the repository for the code itself.
 
 ---
+
+<a id="中文"></a>
+
+# 中文
+
+- 分支：`master`
+- 技术栈：C# / .NET 10 + Avalonia 12，无 WebView，自绘液态玻璃 UI
+- 账号模型：**仅 Microsoft（Xbox Live）账号**
 
 ## 目录
 
-- [一、项目概况](#一项目概况)
-- [二、技术栈与构建](#二技术栈与构建)
-- [三、目录结构与模块职责](#三目录结构与模块职责)
-- [四、账号认证链](#四账号认证链)
-- [五、游戏启动链](#五游戏启动链)
-- [六、实例与目录分析](#六实例与目录分析)
-- [七、界面结构](#七界面结构)
-- [八、数据持久化](#八数据持久化)
-- [九、已知限制与待办](#九已知限制与待办)
-- [十、开发注意事项](#十开发注意事项)
+- [一、项目概况](#cn-1)
+- [二、技术栈与构建](#cn-2)
+- [三、目录结构与模块职责](#cn-3)
+- [四、账号认证链](#cn-4)
+- [五、游戏启动链](#cn-5)
+- [六、实例与目录分析](#cn-6)
+- [七、界面结构](#cn-7)
+- [八、数据持久化](#cn-8)
+- [九、已知限制与待办](#cn-9)
+- [十、开发注意事项](#cn-10)
 
----
-
+<a id="cn-1"></a>
 ## 一、项目概况
 
 Kilim 是一个 Minecraft Java 版启动器桌面客户端，职责是：
@@ -40,8 +46,7 @@ Kilim 是一个 Minecraft Java 版启动器桌面客户端，职责是：
 - 账号体系只走官方渠道，不存在任何绕过官方验证的登录方式；
 - 所有运行数据集中放在可执行文件同级目录，便于排查。
 
----
-
+<a id="cn-2"></a>
 ## 二、技术栈与构建
 
 | 项 | 内容 |
@@ -53,20 +58,11 @@ Kilim 是一个 Minecraft Java 版启动器桌面客户端，职责是：
 | 发布形态 | 单文件自包含、开启压缩、未裁剪 |
 | 子项目 | `src/LiquidGlassAvaloniaUI`（独立 csproj，Avalonia 12.0.1） |
 
-构建：
+构建：`dotnet build Project.Launch.csproj -c Debug`
 
-```bash
-dotnet build Project.Launch.csproj -c Debug
-```
+发布：`dotnet publish Project.Launch.csproj -c Release -r win-x64`
 
-发布：
-
-```bash
-dotnet publish Project.Launch.csproj -c Release -r win-x64
-```
-
----
-
+<a id="cn-3"></a>
 ## 三、目录结构与模块职责
 
 ```
@@ -133,8 +129,7 @@ Project.Launch/
 - 6 个 SKSL 运行时着色器：透镜折射、高光、交互高光、伽马、渐进遮罩、背景变换；
 - 快照缓存与节流（哈希去重、脏矩形、滤镜结果 LRU）。
 
----
-
+<a id="cn-4"></a>
 ## 四、账号认证链
 
 仅 Microsoft 账号，共 7 个阶段，全部走官方接口：
@@ -153,8 +148,7 @@ Project.Launch/
 
 `MicrosoftAuthFlow` 通过两个事件与界面解耦：`DeviceCodeReady`（用户代码就绪）与 `Progress`（阶段提示）。
 
----
-
+<a id="cn-5"></a>
 ## 五、游戏启动链
 
 启动前的校验顺序：
@@ -174,8 +168,7 @@ Project.Launch/
 
 进程启动后，标准输出与标准错误被重定向到 `instances/{实例}/game.log`。
 
----
-
+<a id="cn-6"></a>
 ## 六、实例与目录分析
 
 `MinecraftDirectoryAnalyzer.Analyze(path)` 自动识别两种布局：
@@ -187,8 +180,7 @@ Project.Launch/
 
 扫描规则：`versions/<版本号>/` 下必须存在同名 `<版本号>.json` 才算一个可用版本。
 
----
-
+<a id="cn-7"></a>
 ## 七、界面结构
 
 - **主窗**：五个页签（下载 / 启动 / 主页 / 设置 / 工具），底部玻璃滑块移动动画（缓入缓出 + 梯形缩放脉冲 + 模糊），页签内容淡入淡出。
@@ -198,8 +190,7 @@ Project.Launch/
 - **3D 皮肤**：启动页显示可拖拽旋转的 3D 人物，皮肤类型（Classic / Slim）自动检测，交互后暂停自动旋转。
 - **音效与 Toast**：音效在后台线程播放以避免阻塞 UI；提示信息以右下角 Toast 呈现。
 
----
-
+<a id="cn-8"></a>
 ## 八、数据持久化
 
 数据根目录为可执行文件同级的 `KilimLauncher/`：
@@ -215,8 +206,7 @@ Project.Launch/
 
 写入策略：`accounts.json` 与 `instances.json` 均采用**原子写**（先写 `.tmp`，再 `File.Move` 覆盖），避免写入中断导致配置损坏。
 
----
-
+<a id="cn-9"></a>
 ## 九、已知限制与待办
 
 **认证相关**
@@ -238,8 +228,7 @@ Project.Launch/
 - 下载页仅有界面骨架，尚未实现版本下载能力。
 - `src/ViewModel/` 为预留的 MVVM 协调层，尚未接入。
 
----
-
+<a id="cn-10"></a>
 ## 十、开发注意事项
 
 1. **编译前先关闭正在运行的启动器**，否则输出文件被占用会报 `MSB3027 / MSB3021`；这是文件占用，不是代码错误。
@@ -249,3 +238,237 @@ Project.Launch/
 5. **数据目录不在 AppData**，而在可执行文件同级的 `KilimLauncher/`。
 6. 涉及像素坐标计算时注意用户系统的 DPI 缩放。
 7. 3D 光照已在 `Pivot3DRenderer` 中修正过面片法线方向（法线朝外 + 光源变换回模型空间），调整渲染时不要改回。
+
+---
+
+<a id="english"></a>
+
+# English
+
+- Branch: `master`
+- Stack: C# / .NET 10 + Avalonia 12, no WebView, self-rendered liquid-glass UI
+- Account model: **Microsoft (Xbox Live) accounts only**
+
+## Contents
+
+- [1. Overview](#en-1)
+- [2. Tech Stack and Build](#en-2)
+- [3. Directory Structure and Module Responsibilities](#en-3)
+- [4. Account Authentication Chain](#en-4)
+- [5. Game Launch Chain](#en-5)
+- [6. Instances and Directory Analysis](#en-6)
+- [7. Interface Structure](#en-7)
+- [8. Data Persistence](#en-8)
+- [9. Known Limitations and TODO](#en-9)
+- [10. Development Notes](#en-10)
+
+<a id="en-1"></a>
+## 1. Overview
+
+Kilim is a Minecraft: Java Edition launcher desktop client. Its responsibilities are:
+
+1. Sign in with a Microsoft account and obtain official Minecraft tokens;
+2. Detect an existing local Minecraft installation and parse its version metadata;
+3. Detect and match a suitable Java runtime;
+4. Assemble JVM launch arguments and start the game process.
+
+The current form is an **import-based launcher**: it uses a Minecraft directory already installed on the user's machine and does not download game files from the network.
+
+Design choices:
+
+- **No WebView is used.** The entire interface is built from native Avalonia controls plus custom Skia rendering.
+- The account system uses official channels only. No method of bypassing official authentication exists.
+- All runtime data is kept in a single directory next to the executable, which makes troubleshooting straightforward.
+
+<a id="en-2"></a>
+## 2. Tech Stack and Build
+
+| Item | Details |
+|---|---|
+| Runtime | .NET 10 (`net10.0`), RID `win-x64` |
+| UI framework | Avalonia 12.1.2 + Fluent theme + Inter font |
+| Graphics | SkiaSharp 3.119.4 (3D skin projection, runtime glass shaders) |
+| Audio | NAudio 2.2.1 |
+| Distribution | Single-file, self-contained, compression enabled, untrimmed |
+| Subproject | `src/LiquidGlassAvaloniaUI` (separate csproj, Avalonia 12.0.1) |
+
+Build: `dotnet build Project.Launch.csproj -c Debug`
+
+Publish: `dotnet publish Project.Launch.csproj -c Release -r win-x64`
+
+<a id="en-3"></a>
+## 3. Directory Structure and Module Responsibilities
+
+```
+Project.Launch/
+├── Program.cs                 Entry point; registers the global crash log
+├── App.axaml(.cs)             App initialization, restores the last account, creates the main window
+├── Project.Launch.csproj      Dependencies, resource registration, publish configuration
+├── app.manifest               Windows manifest (DPI awareness, etc.)
+└── src/
+    ├── Tools/                 Core logic layer
+    ├── Tools/Auth/            Account authentication chain
+    ├── Views/                 UI layer
+    ├── ViewModel/             Reserved MVVM coordination layer
+    └── LiquidGlassAvaloniaUI/ Liquid-glass UI subsystem
+```
+
+### `src/Tools/` — Core Logic
+
+| File | Responsibility |
+|---|---|
+| `LauncherPaths.cs` | Centralizes all paths (data root, config files, log files) |
+| `LogHelper.cs` | Unified logging (bilingual, lock-protected) |
+| `AccountData.cs` | Account model (player name, UUID, tokens, skin URL) |
+| `AccountService.cs` | Account persistence: atomic writes (temp file + move-overwrite); read-modify-write confined to a single lock |
+| `InstanceData.cs` / `InstanceService.cs` | Instance model and persistence |
+| `MinecraftDirectoryAnalyzer.cs` | Directory layout detection and version scanning |
+| `MinecraftVersionJson.cs` | Version JSON data model |
+| `GameLauncher.cs` | Argument assembly, natives extraction, game process startup |
+| `JavaDetector.cs` | Java discovery and version matching |
+| `DefaultSkinSelector.cs` | Determines the official default skin (Steve / Alex) from the UUID |
+| `SkinCropper.cs` | Crops the avatar and hat layer out of a skin PNG |
+| `MinecraftSkinModel.cs` | Vertex and UV definitions for the skin cube model (Classic / Slim) |
+| `Pivot3DRenderer.cs` | Pseudo-3D projection, back-face culling, painter's algorithm sorting, lighting |
+| `Pivot3DControl.cs` | 3D skin control (custom drawing + drag + auto-rotate) |
+| `SoundService.cs` / `SoundConfig.cs` | Sound playback and volume configuration |
+| `AnimationConfig.cs` | Global animation parameters (durations, peak scale, peak blur) |
+| `InteractionConfig.cs` | Interaction parameters (drag direction, sensitivity) |
+
+### `src/Tools/Auth/` — Authentication Chain
+
+| File | Responsibility |
+|---|---|
+| `MicrosoftAuthFlow.cs` | End-to-end orchestrator; reports progress and device code to the UI via events |
+| `DeviceCodeAuthService.cs` | Microsoft OAuth 2.0 device code flow (request code + poll for token) |
+| `XboxAuthService.cs` | Xbox Live authentication + XSTS authorization, with XErr code mapping |
+| `MinecraftAuthService.cs` | Minecraft authentication + player profile retrieval |
+| `AuthModels.cs` | JSON models for each stage's requests / responses |
+
+### `src/Views/` — UI Layer
+
+| File | Responsibility |
+|---|---|
+| `MainWindow.axaml(.cs)` | Main window: five tabs, custom title bar, slider animations, instance import, game launch |
+| `LoginWindow.axaml(.cs)` | Login window: Microsoft device code sign-in |
+| `AccountManagerWindow.axaml(.cs)` | Account management: list, switch, remove, add |
+| `Styles.axaml` / `Glass.axaml` | Global styles and glass button styles |
+| `imgs/` / `Sound/` | Icons, skins, sound resources |
+
+### `src/LiquidGlassAvaloniaUI/`
+
+A standalone liquid-glass rendering subsystem (the main project references its build output; its source is excluded from the main project's compilation):
+
+- Captures a background snapshot from the `TopLevel` and publishes it to every `LiquidGlassSurface`;
+- Six SKSL runtime shaders: lens refraction, highlight, interactive highlight, gamma, progressive mask, backdrop transform;
+- Snapshot caching and throttling (hash deduplication, dirty rects, LRU of filter results).
+
+<a id="en-4"></a>
+## 4. Account Authentication Chain
+
+Microsoft accounts only, across 7 stages, all using official endpoints:
+
+| Stage | Description |
+|---|---|
+| 1. Request device code | Requests a `device_code` from the Microsoft OAuth endpoint, receiving a `user_code` and verification URI |
+| 2. User authorizes in browser | The launcher opens the browser automatically with the `otc` parameter, or the user opens it manually and enters the code |
+| 3. Poll for token | Polls at `interval`, handling `authorization_pending` / `slow_down` / `access_denied` / `expired_token`, and supports cancellation |
+| 4. Xbox Live authentication | Exchanges the Microsoft access token for an XBL token (the `RpsTicket` requires a `d=` prefix) |
+| 5. XSTS authorization | Exchanges the XBL token for an XSTS token; on failure, gives a human-readable reason based on the XErr code |
+| 6. Minecraft authentication | Exchanges `XBL3.0 x=<uhs>;<xsts>` for a Minecraft access token |
+| 7. Profile retrieval | Obtains player name, UUID and skin URL; reports a clear error if the account does not own the game |
+
+The resulting account record contains the player name, UUID, Microsoft refresh token, Minecraft access token with its expiry, and the skin URL.
+
+`MicrosoftAuthFlow` is decoupled from the UI via two events: `DeviceCodeReady` (the user code is available) and `Progress` (stage notifications).
+
+<a id="en-5"></a>
+## 5. Game Launch Chain
+
+Pre-launch validation order:
+
+1. A Microsoft account must be signed in (otherwise the user is prompted to sign in);
+2. The selected account must exist and its `access_token` must not be expired (otherwise the user is prompted to sign in again);
+3. The version JSON must exist and be parseable;
+4. A Java runtime satisfying the version requirement must be detected.
+
+Argument assembly highlights:
+
+- **Supports both argument generations**: the modern `arguments.jvm` / `arguments.game` arrays and the legacy `minecraftArguments` string;
+- **`rules` filtering**: both libraries and arguments are filtered by operating system (currently Windows detection only);
+- **Natives extraction**: skips `META-INF/` and resolves the 64 / 32-bit branch of `${arch}`;
+- **Placeholder substitution**: `${classpath}`, `${natives_directory}`, `${library_directory}`, `${assets_root}`, `${assets_index_name}`, `${game_directory}`, `${classpath_separator}`, and more;
+- **Genuine account identity**: `${auth_player_name}` is the player name, `${auth_uuid}` is the UUID, `${auth_access_token}` / `${auth_session}` is the real Minecraft access token, and `${user_type}` is `msa`.
+
+After the process starts, stdout and stderr are redirected to `instances/{instance}/game.log`.
+
+<a id="en-6"></a>
+## 6. Instances and Directory Analysis
+
+`MinecraftDirectoryAnalyzer.Analyze(path)` automatically detects two layouts:
+
+| Layout | Detection condition | Game directory |
+|---|---|---|
+| Standard | A `versions/` directory exists directly under the selected folder | The selected folder itself |
+| Isolated instance | `.minecraft/versions/` exists under the selected folder | `.minecraft/` under the selected folder |
+
+Scanning rule: a version counts as usable only if `versions/<version>/` contains a matching `<version>.json`.
+
+<a id="en-7"></a>
+## 7. Interface Structure
+
+- **Main window**: five tabs (Download / Launch / Home / Settings / Tools) with a bottom glass slider animation (ease-in-out + trapezoidal scale pulse + blur) and cross-fading tab content.
+- **Custom title bar**: `WindowDecorations="None"` with a self-drawn title bar that has two states — a gradient background with light text while a modal window is open, and a transparent background with dark text once sign-in completes, with the icons switching between white and black accordingly.
+- **Login window**: presents the Microsoft device code sign-in flow directly, with three UI states (initial / waiting for authorization / authentication chain progressing).
+- **Account manager window**: lists accounts ordered by most recent use, switches on click, confirms before deleting, and exposes `ShouldOpenLogin` so the main window knows whether to open the login window.
+- **3D skin**: the launch page shows a draggable, rotatable 3D character; the skin type (Classic / Slim) is auto-detected and auto-rotation pauses after interaction.
+- **Sound and toasts**: sounds are played on a background thread to avoid blocking the UI, and messages are shown as a bottom-right toast.
+
+<a id="en-8"></a>
+## 8. Data Persistence
+
+The data root is the `KilimLauncher/` directory next to the executable:
+
+| File | Contents |
+|---|---|
+| `accounts.json` | Account dictionary, currently selected account, whether to skip the login window at startup |
+| `instances.json` | Instance list and currently selected instance |
+| `app.log` | Application-level log |
+| `MainWindowLog.txt` | Main window log |
+| `startup.log` | Process startup log |
+| `crash.log` | Unhandled exception stack traces |
+
+Write strategy: both `accounts.json` and `instances.json` use **atomic writes** (write `.tmp` first, then `File.Move` over the target) so that an interrupted write cannot corrupt the configuration.
+
+<a id="en-9"></a>
+## 9. Known Limitations and TODO
+
+**Authentication**
+
+- The `ClientId` in `src/Tools/Auth/DeviceCodeAuthService.cs` must be replaced with an application ID registered in Azure.
+- The Microsoft refresh token is persisted, but **silent renewal is not implemented yet**; once the access token expires (about 24 hours), the user must sign in again.
+- `${auth_xuid}` is currently hard-coded to `0`; the real XUID is not yet extracted from the XSTS claims.
+
+**Launching**
+
+- No UI for `-Xmx` / `-Xms` memory settings yet.
+- The window resolution is fixed at 925×530 in the placeholders.
+- No integrity check before launch; missing libraries are skipped silently.
+- Returns immediately after starting the process and does not listen for the game's exit event.
+- No support for mod loaders such as Forge / Fabric yet.
+
+**Features**
+
+- The download page is only a UI skeleton; version downloading is not implemented yet.
+- `src/ViewModel/` is a reserved MVVM coordination layer that is not wired up yet.
+
+<a id="en-10"></a>
+## 10. Development Notes
+
+1. **Close any running instance of the launcher before building**, otherwise the output file will be locked and the build will fail with `MSB3027 / MSB3021`. This is file locking, not a code error.
+2. **Do not create temporary csproj files in the repository root**: the main project uses the default `**/*.cs` glob, so an `AssemblyInfo.cs` generated under a temporary project's `obj/` would be pulled into the main compilation, causing duplicated assembly attributes (`CS0579`).
+3. **`Border` is a `Decorator` and accepts only one child**; multiple children require wrapping them in a `Grid`, otherwise `AVLN3000` is raised.
+4. **New windows must be registered in the csproj under `<AvaloniaXaml Update="...">`**, otherwise they are not included in XAML compilation.
+5. **The data directory is not in AppData**; it is `KilimLauncher/` next to the executable.
+6. Keep the user's system DPI scaling in mind when computing pixel coordinates.
+7. The 3D lighting in `Pivot3DRenderer` has already been corrected once for face normal direction (normals facing outward, with the light direction transformed back into model space). Do not revert this when adjusting rendering.

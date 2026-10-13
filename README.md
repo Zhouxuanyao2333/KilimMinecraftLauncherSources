@@ -1,10 +1,14 @@
 # Kilim Minecraft Launcher
 
-一个使用 C# 与 Avalonia 编写的 Minecraft Java 版启动器：无 WebView、原生渲染性能、自绘液态玻璃界面。
-
-A Minecraft: Java Edition launcher written in C# and Avalonia. No WebView, native rendering performance, self-rendered liquid-glass UI.
+**中文** | [English](#english)
 
 ---
+
+<a id="中文"></a>
+
+# 中文
+
+一个使用 C# 与 Avalonia 编写的 Minecraft Java 版启动器：无 WebView、原生渲染性能、自绘液态玻璃界面。
 
 ## 账号支持
 
@@ -70,9 +74,88 @@ KilimLauncher/
 
 ## 说明
 
-- 本项目**不附带、不分发任何 Minecraft 游戏文件**，需要用户自行提供本机已安装的游戏目录。
+- 本项目**不捆绑、不分发任何 Minecraft 游戏文件**，需要用户自行提供本机已安装的游戏目录。
 - 本项目与 Mojang Studios、Microsoft 无隶属关系。Minecraft 是 Mojang Studios 的商标。
 
 ## 许可
 
 见仓库根目录许可证文件。
+
+---
+
+<a id="english"></a>
+
+# English
+
+A Minecraft: Java Edition launcher written in C# and Avalonia — no WebView, native rendering performance, and a self-rendered liquid-glass UI.
+
+## Account Support
+
+This launcher **supports Microsoft (Xbox Live) accounts only**.
+
+- Authorization uses the Microsoft OAuth 2.0 **device code flow**. Users complete sign-in entirely in their browser; the launcher never touches or stores user passwords.
+- The authentication chain uses official endpoints throughout: Microsoft OAuth → Xbox Live → XSTS → Minecraft authentication → player profile.
+- Game launch uses the official Minecraft `access_token` together with `user_type=msa`, so sessions are authenticated as a genuine (premium) account.
+- Skins are fetched from Mojang's official texture service. If an account has no custom skin, the launcher falls back to the official default skin (Steve / Alex, selected by UUID).
+- No method of bypassing official authentication is provided, nor is one planned.
+
+You must configure your own Azure application `ClientId`; see `src/Tools/Auth/DeviceCodeAuthService.cs`.
+
+## Features
+
+| Area | Description |
+|---|---|
+| Accounts | Microsoft account sign-in, multi-account management (switch / remove), account persistence |
+| Instances | Import an existing local Minecraft directory; automatically detects the standard `.minecraft` layout and the isolated-instance layout |
+| Versions | Parses version JSON, supporting both the modern `arguments.jvm` / `arguments.game` arrays and the legacy `minecraftArguments` string |
+| Launching | Builds the classpath, extracts natives, performs full placeholder substitution, applies `rules` filtering, redirects process logs |
+| Java | Detects Java from `JAVA_HOME`, `PATH` and common JDK vendor directories, then matches the version required by the version JSON |
+| Interface | Five-tab main window, custom title bar, liquid-glass slider animations, 3D skin preview, sound effects and toasts |
+
+## Tech Stack
+
+| Item | Details |
+|---|---|
+| Runtime | .NET 10 (`net10.0`), win-x64 |
+| UI | Avalonia 12.1.2 + Fluent theme + Inter font |
+| Rendering | SkiaSharp (3D skin projection, glass shaders) |
+| Audio | NAudio |
+| Distribution | Single-file, self-contained (`PublishSingleFile` + compression), untrimmed |
+| Subproject | `src/LiquidGlassAvaloniaUI` (separate csproj; the main project references its build output) |
+
+## Build
+
+```bash
+dotnet build Project.Launch.csproj -c Debug
+```
+
+Publish a single file:
+
+```bash
+dotnet publish Project.Launch.csproj -c Release -r win-x64
+```
+
+> Close any running instance of the launcher before building, otherwise the output file will be locked and the build will fail with `MSB3027 / MSB3021`.
+
+## Data Directory
+
+All runtime data lives in a `KilimLauncher/` directory next to the executable (not in AppData):
+
+```
+KilimLauncher/
+├── accounts.json      Accounts and tokens
+├── instances.json     Instance list
+├── app.log            Application log
+├── MainWindowLog.txt  Main window log
+├── startup.log        Startup log
+└── crash.log          Crash log
+```
+
+## Notes
+
+- This project **does not bundle or redistribute any Minecraft game files**. Users must supply their own local, already-installed game directory.
+- This project is not affiliated with Mojang Studios or Microsoft. Minecraft is a trademark of Mojang Studios.
+
+## License
+
+See the license file in the repository root.
