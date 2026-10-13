@@ -1,0 +1,9 @@
+bin/
+obj/
+.vscode/
+.vs/
+publish/
+*.zip
+*.user
+desktop.ini
+KilimLauncher/

@@ -1,0 +1,165 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:media="clr-namespace:Avalonia.Media;assembly=Avalonia.Base"
+        xmlns:avalonia="using:Avalonia.Controls"
+        xmlns:lg="using:LiquidGlassAvaloniaUI"
+        x:Class="Project.Launch.Views.LoginWindow"
+        Title="登录"
+        Width="800" Height="440"
+        WindowDecorations="None"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        CanResize="False"
+        Background="Transparent"
+        TransparencyLevelHint="AcrylicBlur"
+        avalonia:Win32Properties.WindowCornerPreference="Round">
+
+    <Border CornerRadius="12" Background="White">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="30,30,30,15">
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="22">
+
+                    <Border x:Name="TitleContainer"
+                            HorizontalAlignment="Center">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="登录 Kilim Minecraft Launcher"
+                                       FontSize="20"
+                                       FontWeight="Bold"
+                                       Foreground="#333"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Text="使用 Microsoft 账号登录"
+                                       FontSize="12"
+                                       Foreground="#888"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,10,0,0" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border x:Name="InputPanel"
+                            HorizontalAlignment="Center"
+                            Height="230"
+                            VerticalAlignment="Top"
+                            Opacity="1">
+
+                        <Grid x:Name="MicrosoftPanel"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Top"
+                              IsVisible="True">
+                            <!-- 状态 1：初始 -->
+                            <StackPanel x:Name="MsIdlePanel"
+                                        Spacing="12"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                <TextBlock Text="使用 Microsoft 账号登录"
+                                           FontSize="14"
+                                           Foreground="#555"
+                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="登录后可同步正版皮肤与联机会话"
+                                           FontSize="12"
+                                           Foreground="#888"
+                                           HorizontalAlignment="Center" />
+                                <Button x:Name="MsLoginButton"
+                                        Classes="Miret"
+                                        Content="开始登录"
+                                        Width="140"
+                                        Height="36"
+                                        HorizontalAlignment="Center"
+                                        Margin="0,10,0,0"
+                                        Click="OnMsLoginClicked" />
+                            </StackPanel>
+
+                            <!-- 状态 2：等待用户授权 -->
+                            <StackPanel x:Name="MsWaitingPanel"
+                                        Spacing="10"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        IsVisible="False">
+                                <TextBlock Text="在浏览器打开以下网址："
+                                           FontSize="13"
+                                           Foreground="#555"
+                                           HorizontalAlignment="Center" />
+                                <TextBlock x:Name="MsVerificationUri"
+                                           FontSize="12"
+                                           Foreground="#4C8F4C"
+                                           HorizontalAlignment="Center"
+                                           TextWrapping="Wrap" />
+                                <TextBlock Text="输入代码："
+                                           FontSize="13"
+                                           Foreground="#555"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,8,0,0" />
+                                <TextBlock x:Name="MsUserCode"
+                                           FontSize="22"
+                                           FontWeight="Bold"
+                                           FontFamily="Consolas,monospace"
+                                           Foreground="#333"
+                                           HorizontalAlignment="Center" />
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Center"
+                                            Spacing="10"
+                                            Margin="0,6,0,0">
+                                    <Button x:Name="MsCopyCodeButton"
+                                            Classes="Miret"
+                                            Content="复制代码"
+                                            Padding="14,6"
+                                            Click="OnMsCopyCodeClicked" />
+                                    <Button x:Name="MsOpenBrowserButton"
+                                            Classes="Miret"
+                                            Content="打开浏览器"
+                                            Padding="14,6"
+                                            Click="OnMsOpenBrowserClicked" />
+                                </StackPanel>
+                                <TextBlock x:Name="MsStatus"
+                                           FontSize="12"
+                                           Foreground="#888"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,8,0,0"
+                                           Text="等待授权中..." />
+                                <Button x:Name="MsCancelButton"
+                                        Classes="Miret"
+                                        Content="取消"
+                                        Padding="14,6"
+                                        HorizontalAlignment="Center"
+                                        Margin="0,4,0,0"
+                                        Click="OnMsCancelClicked" />
+                            </StackPanel>
+
+                            <!-- 状态 3：认证链推进 -->
+                            <StackPanel x:Name="MsProgressPanel"
+                                        Spacing="10"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        IsVisible="False">
+                                <TextBlock x:Name="MsProgressText"
+                                           FontSize="14"
+                                           Foreground="#333"
+                                           HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Grid>
+
+            <Border Grid.Row="1"
+                    Height="44"
+                    Background="#F5F5F5"
+                    CornerRadius="0,0,12,12">
+                <DockPanel Margin="15,0,15,0">
+                    <TextBlock DockPanel.Dock="Left" Text="v0.2.1" FontSize="11" Foreground="#999" VerticalAlignment="Center" />
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+                        <Button x:Name="GitHubButton" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="0" Width="44" Height="44" ToolTip.Tip="点击即访问仓库">
+                            <Image Source="avares://Project.Launch/src/Views/imgs/github.png" Width="36" Height="36" Stretch="Uniform" />
+                        </Button>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

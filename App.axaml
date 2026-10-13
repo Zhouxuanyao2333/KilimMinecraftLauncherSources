@@ -1,0 +1,13 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Project.Launch.App"
+             RequestedThemeVariant="Default">
+
+    <Application.Styles>
+        <FluentTheme />
+        <!-- 主题色 + Miret 样式 -->
+        <StyleInclude Source="avares://Project.Launch/src/Views/Styles.axaml" />
+        <!-- ★ 液态玻璃参数表 + Glass 按钮样式 -->
+        <StyleInclude Source="avares://Project.Launch/src/Views/Glass.axaml" />
+    </Application.Styles>
+</Application>
